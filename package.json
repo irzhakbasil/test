@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:jest": "jest --watch"
   },
   "private": true,
   "dependencies": {
@@ -25,13 +26,36 @@
     "@angular-devkit/build-angular": "^19.2.5",
     "@angular/cli": "^19.2.5",
     "@angular/compiler-cli": "^19.2.0",
+    "@testing-library/angular": "^17.3.7",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jasmine": "~5.1.0",
+    "@types/jest": "^29.5.14",
     "jasmine-core": "~5.6.0",
+    "jest": "^29.7.0",
+    "jest-preset-angular": "^14.5.4",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.7.2"
-  }
+    "msw": "^2.7.3",
+    "typescript": "~5.7.2",
+    "whatwg-fetch": "^3.6.20"
+  },
+  "jest": {
+    "preset": "jest-preset-angular",
+    "setupFilesAfterEnv": [
+      "<rootDir>/setup.jest.ts"
+    ],
+    "testMatch": [
+      "**/?(*.)+(jest).ts"
+    ],
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/setup.jest.ts"
+    ]
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
