@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SignUpComponent } from './sign-up.component';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('SignUpComponent', () => {
   let component: SignUpComponent;
@@ -8,7 +10,8 @@ describe('SignUpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SignUpComponent]
+      imports: [SignUpComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     })
     .compileComponents();
 
@@ -72,5 +75,54 @@ describe('SignUpComponent', () => {
       expect(button.disabled).toBe(true);
     } )
   });
+
+  describe('Interactions', () => {
+    it('enables the button when password and confirm password are the same', () => {
+      const passwordInput = fixture.nativeElement.querySelector('input[id=password]') as HTMLInputElement;
+      const confirmPasswordInput = fixture.nativeElement.querySelector('input[id=confirmPassword]') as HTMLInputElement;
+      passwordInput.value = '123456';
+      passwordInput.dispatchEvent(new Event('input'));
+      confirmPasswordInput.value = '123456';
+      confirmPasswordInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+      expect(button.disabled).toBeFalsy();
+    });
+
+    it('SENDS username, email and password after clicking the button', async () => {
+      let httpTestingController = TestBed.inject(HttpTestingController);
+
+      const usernameInput = fixture.nativeElement.querySelector('input[id=username]') as HTMLInputElement;
+      const emailInput = fixture.nativeElement.querySelector('input[id=email]') as HTMLInputElement;
+      const passwordInput = fixture.nativeElement.querySelector('input[id=password]') as HTMLInputElement;
+      const confirmPasswordInput = fixture.nativeElement.querySelector('input[id=confirmPassword]') as HTMLInputElement;
+    
+      passwordInput.value = '123456';
+      passwordInput.dispatchEvent(new Event('input'));
+    
+      confirmPasswordInput.value = '123456';
+      confirmPasswordInput.dispatchEvent(new Event('input'));
+    
+      usernameInput.value = 'testuser';
+      usernameInput.dispatchEvent(new Event('input'));
+    
+      emailInput.value = 'test@test.com';
+      emailInput.dispatchEvent(new Event('input'));
+    
+      fixture.detectChanges();
+      await fixture.whenStable(); // дочекайтеся завершення прив'язки
+    
+      const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+      button.click();
+    
+      const reqObj = httpTestingController.expectOne('https://jsonplaceholder.typicode.com/posts');
+      const reqBody = reqObj.request.body;
+      expect(reqBody).toEqual({
+        username: 'testuser',
+        password: '123456',
+        email: 'test@test.com',
+      });
+    });
+  })
 
 });

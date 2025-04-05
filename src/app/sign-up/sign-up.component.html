@@ -1,10 +1,21 @@
 <h1>Sign Up</h1>
-<label for="username">Username</label>
-<input id="username"/>
-<label for="email">E-mail</label>
-<input id="email"/>
-<label for="password">Password</label>
-<input id="password" type="password"/>
-<label for="confirmPassword">Confirm Password</label>
-<input id="confirmPassword" type="password"/>
-<button type="submit" (click)="onSubmit()" disabled>Sign Up</button>
+
+<form (submit)="onClickSignUp(); $event.preventDefault()">
+    <label for="username">Username</label>
+
+    <input id="username" (input)="onUserNameChange($event)"/>
+
+    <label for="email">E-mail</label>
+
+    <input id="email" (input)="onEmailChange($event)"/>
+
+    <label for="password">Password</label>
+
+    <input id="password" type="password" (input)="onPasswordChange($event)" />
+
+    <label for="confirmPassword">Confirm Password</label>
+
+    <input id="confirmPassword" type="password" (input)="onConfirmPasswordChange($event)" />
+
+    <button type="submit" [disabled]="isDisabled()">Sign Up</button>
+</form>
