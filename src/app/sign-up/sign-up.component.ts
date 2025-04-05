@@ -15,6 +15,8 @@ export class SignUpComponent implements OnInit {
 
   http = inject(HttpClient);
 
+  apiProgress = false;
+
   ngOnInit(): void {
     // Initialize component
   }
@@ -36,17 +38,21 @@ export class SignUpComponent implements OnInit {
   }
 
   isDisabled() {
-    return !this.password || this.password !== this.confirmPassword;
+    return !this.password || this.password !== this.confirmPassword || this.apiProgress;
   }
+
   onClickSignUp() {
-    this.http.post('https://jsonplaceholder.typicode.com/posts', {
+    this.apiProgress = true;
+    this.http.post('/api/1.0/users', {
       username: this.username,
       email: this.email,
       password: this.password,
     }).subscribe((response) => {
+      this.apiProgress = false;
       console.log(response);
     }
     , (error) => {  
+      this.apiProgress = false;
       console.log(error);
     }
     , () => {

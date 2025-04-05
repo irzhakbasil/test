@@ -17,5 +17,10 @@
 
     <input id="confirmPassword" type="password" (input)="onConfirmPasswordChange($event)" />
 
-    <button type="submit" [disabled]="isDisabled()">Sign Up</button>
+    <button type="submit" [disabled]="isDisabled() || apiProgress">Sign Up</button>
+    @if(apiProgress) {
+        <div class="app-spinner">
+            .....loading
+        </div>
+    }
 </form>

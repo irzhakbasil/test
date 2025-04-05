@@ -115,7 +115,7 @@ describe('SignUpComponent', () => {
       await setupForm();
       button.click();
     
-      const reqObj = httpTestingController.expectOne('https://jsonplaceholder.typicode.com/posts');
+      const reqObj = httpTestingController.expectOne('/api/1.0/users');
       const reqBody = reqObj.request.body;
       expect(reqBody).toEqual({
         username: 'testuser',
@@ -123,5 +123,26 @@ describe('SignUpComponent', () => {
         email: 'test@test.com',
       });
     });
+    it('disables button when there is ongoing api call', async () => {
+      await setupForm();
+      button.click();
+      fixture.detectChanges();
+      button.click();
+      httpTestingController.expectOne('/api/1.0/users');
+      expect(button.disabled).toBeTruthy();
+    })
+
+    it('displays spinner when there is ongoing api call', async () => {
+      await setupForm();
+      button.click();
+      fixture.detectChanges();
+      const spinner = fixture.nativeElement.querySelector('.app-spinner') as HTMLElement;
+      expect(spinner).toBeTruthy();
+    })
+    it('doe not display spinner it there is no api request', async () => {
+      await setupForm();
+      const spinner = fixture.nativeElement.querySelector('.app-spinner') as HTMLElement;
+      expect(spinner).toBeFalsy();
+    })
   })
 });

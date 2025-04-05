@@ -6,8 +6,10 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 // Setup MSW server
+let couter = 0;
 const server = setupServer(
-  rest.post('https://jsonplaceholder.typicode.com/posts', (req, res, ctx) => {
+  rest.post('/api/1.0/users', (req, res, ctx) => {
+    couter += 1;
     return res(ctx.status(200), ctx.json({}));
   })
 );
@@ -21,7 +23,10 @@ const setupComponent = async () => {
 
 describe('SignUpComponent', () => {
   beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    couter = 0; 
+    server.resetHandlers()
+  });
   afterAll(() => server.close());
 
   describe('Layout', () => {
@@ -77,6 +82,23 @@ describe('SignUpComponent', () => {
   });
 
   describe('Interactions', () => {
+    let button: HTMLButtonElement;
+    const setupForm = async () => {
+      await setupComponent();
+
+      const usernameInput = screen.getByLabelText('Username');
+      const emailInput = screen.getByLabelText('E-mail');
+      const passwordInput = screen.getByLabelText('Password');
+      const confirmPasswordInput = screen.getByLabelText('Confirm Password');
+      
+      await userEvent.type(usernameInput, 'testuser');
+      await userEvent.type(emailInput, 'test@example.com');
+      await userEvent.type(passwordInput, 'password123');
+      await userEvent.type(confirmPasswordInput, 'password123');
+
+      button = screen.getByRole('button', { name: 'Sign Up' });
+    }
+
     it('enables the button when password and confirm password match', async () => {
       await setupComponent();
       const passwordInput = screen.getByLabelText('Password');
@@ -92,24 +114,14 @@ describe('SignUpComponent', () => {
     it('sends username, email and password after clicking the button', async () => {
       let requestBody: any;
       server.use(
-        rest.post('/posts', async (req, res, ctx) => {
+        rest.post('/api/1.0/users', async (req, res, ctx) => {
           requestBody = await req.json();
           return res(ctx.status(200), ctx.json({}));
         })
       );
 
-      await setupComponent();
+      await setupForm();
 
-      const usernameInput = screen.getByLabelText('Username');
-      const emailInput = screen.getByLabelText('E-mail');
-      const passwordInput = screen.getByLabelText('Password');
-      const confirmPasswordInput = screen.getByLabelText('Confirm Password');
-      const button = screen.getByRole('button', { name: 'Sign Up' });
-
-      await userEvent.type(usernameInput, 'testuser');
-      await userEvent.type(emailInput, 'test@example.com');
-      await userEvent.type(passwordInput, 'password123');
-      await userEvent.type(confirmPasswordInput, 'password123');
       await userEvent.click(button);
 
       await waitFor(() => {
@@ -132,5 +144,49 @@ describe('SignUpComponent', () => {
 
       expect(button).toBeDisabled();
     });
+
+    it('disables button when there is ongoing api call', async () => {
+      // Setup a delayed response to ensure we can test the loading state
+      server.use(
+        rest.post('/api/1.0/users', async (req, res, ctx) => {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          couter += 1;
+          return res(ctx.status(200), ctx.json({}));
+        })
+      );
+    
+      await setupForm();
+      
+      // First click - should trigger API call
+      await userEvent.click(button);
+      
+      // Verify button is disabled during API call
+      expect(button).toBeDisabled();
+      
+      // Try to click again while API call is ongoing
+      await userEvent.click(button);
+      
+      // Wait for API call to complete and verify counter
+      await waitFor(() => {
+        expect(couter).toBe(1);
+      });
+    });
+
+     it('displays spinner when there is ongoing api call', async () => {
+      server.use(
+        rest.post('/api/1.0/users', async (req, res, ctx) => {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          return res(ctx.status(200), ctx.json({}));
+        })
+      );
+
+      await setupForm();
+      expect(document.querySelector('.app-spinner')).not.toBeInTheDocument();
+      await userEvent.click(button);
+
+      const spinner = document.querySelector('.app-spinner');
+      expect(spinner).toBeInTheDocument();
+     })
+
   });
 });
