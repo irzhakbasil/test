@@ -16,9 +16,7 @@ export class SignUpComponent implements OnInit {
   http = inject(HttpClient);
 
   ngOnInit(): void {
-    setTimeout(() => {
-      console.log();
-    }, 1000);
+    // Initialize component
   }
 
 
@@ -38,7 +36,6 @@ export class SignUpComponent implements OnInit {
   }
 
   isDisabled() {
-    console.log('sdfsfd')
     return !this.password || this.password !== this.confirmPassword;
   }
 
