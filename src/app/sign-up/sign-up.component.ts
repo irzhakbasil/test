@@ -38,7 +38,6 @@ export class SignUpComponent implements OnInit {
   isDisabled() {
     return !this.password || this.password !== this.confirmPassword;
   }
-
   onClickSignUp() {
     this.http.post('https://jsonplaceholder.typicode.com/posts', {
       username: this.username,

@@ -77,20 +77,11 @@ describe('SignUpComponent', () => {
   });
 
   describe('Interactions', () => {
-    it('enables the button when password and confirm password are the same', () => {
-      const passwordInput = fixture.nativeElement.querySelector('input[id=password]') as HTMLInputElement;
-      const confirmPasswordInput = fixture.nativeElement.querySelector('input[id=confirmPassword]') as HTMLInputElement;
-      passwordInput.value = '123456';
-      passwordInput.dispatchEvent(new Event('input'));
-      confirmPasswordInput.value = '123456';
-      confirmPasswordInput.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
-      expect(button.disabled).toBeFalsy();
-    });
 
-    it('SENDS username, email and password after clicking the button', async () => {
-      let httpTestingController = TestBed.inject(HttpTestingController);
+    let httpTestingController: HttpTestingController;
+    let button: HTMLButtonElement;
+    const setupForm = async () => {
+      httpTestingController = TestBed.inject(HttpTestingController);
 
       const usernameInput = fixture.nativeElement.querySelector('input[id=username]') as HTMLInputElement;
       const emailInput = fixture.nativeElement.querySelector('input[id=email]') as HTMLInputElement;
@@ -112,7 +103,16 @@ describe('SignUpComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable(); // дочекайтеся завершення прив'язки
     
-      const button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+      button = fixture.nativeElement.querySelector('button[type=submit]') as HTMLButtonElement;
+    }
+
+    it('enables the button when password and confirm password are the same', async () => {
+      await setupForm();
+      expect(button.disabled).toBeFalsy();
+    });
+
+    it('SENDS username, email and password after clicking the button', async () => {
+      await setupForm();
       button.click();
     
       const reqObj = httpTestingController.expectOne('https://jsonplaceholder.typicode.com/posts');
@@ -124,5 +124,4 @@ describe('SignUpComponent', () => {
       });
     });
   })
-
 });

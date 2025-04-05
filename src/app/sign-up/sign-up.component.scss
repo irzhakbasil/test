@@ -1,0 +1,101 @@
+// Sign Up Form SCSS
+@use "sass:color";
+
+$primary-color: #4285f4;
+$error-color: #ea4335;
+$success-color: #34a853;
+$text-color: #333;
+$light-gray: #f5f5f5;
+$border-color: #ddd;
+$border-radius: 4px;
+$transition: all 0.3s ease;
+
+h1 {
+  text-align: center;
+  color: $primary-color;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: $text-color;
+    font-weight: 500;
+  }
+  
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    font-size: 1rem;
+    transition: $transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+    
+    &[type="password"] {
+      letter-spacing: 0.1em;
+    }
+  }
+  
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    border-radius: $border-radius;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $transition;
+    
+    &:hover:not(:disabled) {
+      background-color: color.adjust($primary-color, $lightness: -10%);
+    }
+    
+    &:disabled {
+      background-color: color.adjust($primary-color, $lightness: 25%);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  form {
+    padding: 1.5rem;
+    margin: 0 1rem;
+  }
+}
+
+input.ng-invalid.ng-touched {
+  border-color: $error-color;
+  
+  &:focus {
+    box-shadow: 0 0 0 2px rgba($error-color, 0.2);
+  }
+}
+
+input.ng-valid.ng-touched {
+  border-color: $success-color;
+  
+  &:focus {
+    box-shadow: 0 0 0 2px rgba($success-color, 0.2);
+  }
+}

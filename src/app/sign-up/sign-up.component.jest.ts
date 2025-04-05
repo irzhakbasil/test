@@ -92,7 +92,7 @@ describe('SignUpComponent', () => {
     it('sends username, email and password after clicking the button', async () => {
       let requestBody: any;
       server.use(
-        rest.post('https://jsonplaceholder.typicode.com/posts', async (req, res, ctx) => {
+        rest.post('/posts', async (req, res, ctx) => {
           requestBody = await req.json();
           return res(ctx.status(200), ctx.json({}));
         })

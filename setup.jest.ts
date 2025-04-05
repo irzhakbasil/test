@@ -3,9 +3,9 @@ import '@testing-library/jest-dom';
 import 'whatwg-fetch'; // This adds fetch, Request, Response, etc. polyfills
 
 // Add global fetch API polyfills needed for MSW
-global.Response = Response;
-global.Request = Request;
-global.Headers = Headers;
+(globalThis as any).Response = Response;
+(globalThis as any).Request = Request;
+(globalThis as any).Headers = Headers;
 
 // Mock BroadcastChannel (required by MSW)
 const mockBroadcastChannel = {
@@ -34,6 +34,6 @@ const mockBroadcastChannel = {
 };
 
 // Set the global BroadcastChannel to our mock implementation
-global.BroadcastChannel = mockBroadcastChannel as unknown as typeof BroadcastChannel;
+(globalThis as any).BroadcastChannel = mockBroadcastChannel as unknown as typeof BroadcastChannel;
 
 setupZoneTestEnv();
