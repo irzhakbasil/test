@@ -144,5 +144,24 @@ describe('SignUpComponent', () => {
       const spinner = fixture.nativeElement.querySelector('.app-spinner') as HTMLElement;
       expect(spinner).toBeFalsy();
     })
+    it('displays account activation notification when api call is successful', async () => {
+      await setupForm();
+      expect(fixture.nativeElement.querySelector('.alert-success')).toBeFalsy();
+      button.click();
+      const req = httpTestingController.expectOne('/api/1.0/users');
+      req.flush({});
+      fixture.detectChanges();
+      const message = fixture.nativeElement.querySelector('.alert-success') as HTMLElement;
+      expect(message.textContent).toContain('Check your email to activate your account');
+    })
+    it('hides form after successfull sign up', async () => {
+      await setupForm();
+       expect(fixture.nativeElement.querySelector('.sign-up-form')).toBeTruthy();
+       button.click();
+       const req = httpTestingController.expectOne('/api/1.0/users');
+       req.flush({});
+       fixture.detectChanges();
+       expect(fixture.nativeElement.querySelector('.sign-up-form')).toBeFalsy();
+    })
   })
 });

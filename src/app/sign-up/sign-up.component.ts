@@ -16,6 +16,7 @@ export class SignUpComponent implements OnInit {
   http = inject(HttpClient);
 
   apiProgress = false;
+  signUpSuccess = false;
 
   ngOnInit(): void {
     // Initialize component
@@ -49,7 +50,7 @@ export class SignUpComponent implements OnInit {
       password: this.password,
     }).subscribe((response) => {
       this.apiProgress = false;
-      console.log(response);
+      this.signUpSuccess = true;
     }
     , (error) => {  
       this.apiProgress = false;

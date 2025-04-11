@@ -172,7 +172,36 @@ describe('SignUpComponent', () => {
       });
     });
 
-     it('displays spinner when there is ongoing api call', async () => {
+    it('displays spinner when there is ongoing api call', async () => {
+    server.use(
+      rest.post('/api/1.0/users', async (req, res, ctx) => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return res(ctx.status(200), ctx.json({}));
+      })
+    );
+
+    await setupForm();
+    expect(document.querySelector('.app-spinner')).not.toBeInTheDocument();
+    await userEvent.click(button);
+
+    const spinner = document.querySelector('.app-spinner');
+    expect(spinner).toBeInTheDocument();
+    });
+    it('displays account activation notification when api call is successful', async () => {
+      server.use(
+        rest.post('/api/1.0/users', async (req, res, ctx) => {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          return res(ctx.status(200), ctx.json({}));
+        })
+      );
+      await setupForm();
+      expect(document.querySelector('.alert-success')).not.toBeInTheDocument();
+      await userEvent.click(button);
+      const notification = await screen.findByRole('alert');
+      expect(notification).toBeInTheDocument();
+      expect(notification).toHaveClass('alert-success');
+    })
+    it('hides form after successfull sign up', async () => {
       server.use(
         rest.post('/api/1.0/users', async (req, res, ctx) => {
           await new Promise(resolve => setTimeout(resolve, 100));
@@ -181,12 +210,13 @@ describe('SignUpComponent', () => {
       );
 
       await setupForm();
-      expect(document.querySelector('.app-spinner')).not.toBeInTheDocument();
+      expect(screen.getByTestId('sign-up-form')).toBeInTheDocument();
       await userEvent.click(button);
-
-      const spinner = document.querySelector('.app-spinner');
-      expect(spinner).toBeInTheDocument();
-     })
-
+      const notification = await screen.findByRole('alert');
+      expect(notification).toBeInTheDocument();
+      expect(screen.queryByTestId('sign-up-form')).not.toBeInTheDocument();
+      expect(notification).toHaveClass('alert-success');
+      expect(notification.textContent).toContain('Check your email to activate your account');
+    })
   });
 });

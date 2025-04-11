@@ -1,26 +1,32 @@
 <h1>Sign Up</h1>
 
-<form (submit)="onClickSignUp(); $event.preventDefault()">
-    <label for="username">Username</label>
-
-    <input id="username" (input)="onUserNameChange($event)"/>
-
-    <label for="email">E-mail</label>
-
-    <input id="email" (input)="onEmailChange($event)"/>
-
-    <label for="password">Password</label>
-
-    <input id="password" type="password" (input)="onPasswordChange($event)" />
-
-    <label for="confirmPassword">Confirm Password</label>
-
-    <input id="confirmPassword" type="password" (input)="onConfirmPasswordChange($event)" />
-
-    <button type="submit" [disabled]="isDisabled() || apiProgress">Sign Up</button>
-    @if(apiProgress) {
-        <div class="app-spinner">
-            .....loading
-        </div>
-    }
-</form>
+@if(!signUpSuccess) {
+    <form (submit)="onClickSignUp(); $event.preventDefault()" data-testid="sign-up-form" class="sign-up-form">
+        <label for="username">Username</label>
+    
+        <input id="username" (input)="onUserNameChange($event)"/>
+    
+        <label for="email">E-mail</label>
+    
+        <input id="email" (input)="onEmailChange($event)"/>
+    
+        <label for="password">Password</label>
+    
+        <input id="password" type="password" (input)="onPasswordChange($event)" />
+    
+        <label for="confirmPassword">Confirm Password</label>
+    
+        <input id="confirmPassword" type="password" (input)="onConfirmPasswordChange($event)" />
+    
+        <button type="submit" [disabled]="isDisabled() || apiProgress">Sign Up</button>
+        @if(apiProgress) {
+            <div class="app-spinner">
+                .....loading
+            </div>
+        }
+    </form>
+} @else  {
+    <div class="alert-success" role="alert">
+        Check your email to activate your account
+    </div>
+}
